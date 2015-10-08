@@ -12,20 +12,6 @@ class PuzzleBuffer
     @pos    = 0
   end
 
-  def checksum(start, length, cksum)
-    seek(start)
-
-    length.times do
-      bitset = (cksum & 0x0001) != 0
-
-      cksum >>= 1
-      cksum |= 0x8000 if bitset
-      cksum += unpack('C', 1)
-    end
-
-    cksum
-  end
-
   def seek_by(off)
     @pos += off
   end
@@ -44,6 +30,8 @@ class PuzzleBuffer
     unpack_multiple(spec, size)[0]
   end
 
+  # :reek:ControlParameter - size - it would make no sense to define read_4_bytes,
+  # read_12_bytes, ad infinitum.
   def unpack_multiple(spec, size)
     start = @pos
     @pos += (size || SIZES[spec[0]])

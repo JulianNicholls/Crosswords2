@@ -9,7 +9,7 @@ class Grid
       letter, user, num = line.split ','
 
       me = new(letter)
-      me.add_index(num.to_i) unless num.empty?
+      me.add_index(num.to_i) if num
       me.user = user
 
       me
@@ -26,7 +26,7 @@ class Grid
       @number = num
     end
 
-    # Black means a black square
+    # Blank means a black square
     def blank?
       @letter == '.'
     end
@@ -42,7 +42,7 @@ class Grid
     end
 
     def to_text
-      "#{letter},#{user},#{number}"
+      "#{letter},#{user},#{@number}"
     end
 
     def draw(window, highlight)

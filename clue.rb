@@ -1,4 +1,5 @@
 require 'gosu_enhanced'
+require './constants'
 
 # Have a clue.
 # :reek:TooManyInstanceVariables
@@ -65,7 +66,7 @@ class Clue
 
   # :reek:LongParameterList: {max_params: 5}
   def draw_wrapped(game, pos, text, parts)
-    TextWrapper::wrap(text, parts).each do |part|
+    TextWrapper.wrap(text, parts).each do |part|
       draw_simple(game, pos, part)
     end
   end

@@ -2,9 +2,6 @@
 class PuzzleBuffer
   SIZES = { 'S' => 2, 'Q' => 8, 'C' => 1 }
 
-  attr_accessor :pos
-  alias_method :seek, :pos=
-
   def initialize(data = nil)
     self.data = data
   end

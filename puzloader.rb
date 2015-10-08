@@ -17,6 +17,7 @@ class PuzzleLoader
 
   def initialize(filename, debug = false)
     @buffer = PuzzleBuffer.new(read filename)
+    @debug = debug    # TODO
 
     # Skip past an optional pre-header
     seek_to(SIGNATURE, -2)
@@ -31,7 +32,7 @@ class PuzzleLoader
   end
 
   def valid?
-    load_check_values if @file_checkum.nil?
+    load_check_values unless @file_checkum
     cksum = @buffer.checksum(0x2C, 8, 0)
     return false if cksum != @cib_checksum
 
@@ -83,11 +84,15 @@ class PuzzleLoader
     # Puzzle Type, 1 = Normal, 0x0401 = Diagramless
     seek_by(2)
     @scrambled = unpack('S<')
+
+    puts "Sizes: #{@width}, #{@height}, #{@num_clues}" if @debug  # TODO
   end
 
   def load_answer
     @rows = []
     @height.times { @rows << unpack('a' + @width.to_s, @width) }
+
+    pp @rows if @debug  # TODO
   end
 
   # Skip possible solution
@@ -99,11 +104,15 @@ class PuzzleLoader
     @title      = unpack_zstring
     @author     = unpack_zstring
     @copyright  = unpack_zstring
+
+    puts "Texts: #{@title}, #{@author}, #{@copyright}" if @debug   # TODO
   end
 
   def load_clues
     @clues = []
     @num_clues.times { @clues << unpack_zstring }
+
+    pp @clues if @debug   # TODO
   end
 
   def read(filename)
@@ -117,6 +126,6 @@ class PuzzleLoader
   end
 
   def debug(name, value)
-    printf "%s: %d %04x\n", name, value, value
+    printf "%s: %d 0x%04x\n", name, value, value
   end
 end

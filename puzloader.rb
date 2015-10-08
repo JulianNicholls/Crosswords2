@@ -17,7 +17,7 @@ class PuzzleLoader
 
   def initialize(filename, debug = false)
     @buffer = PuzzleBuffer.new(read filename)
-    @debug = debug    # TODO
+    # @debug = debug
 
     # Skip past an optional pre-header
     seek_to(SIGNATURE, -2)
@@ -85,14 +85,14 @@ class PuzzleLoader
     seek_by(2)
     @scrambled = unpack('S<')
 
-    puts "Sizes: #{@width}, #{@height}, #{@num_clues}" if @debug  # TODO
+    # puts "Sizes: #{@width}, #{@height}, #{@num_clues}" if @debug  # TODO
   end
 
   def load_answer
     @rows = []
     @height.times { @rows << unpack('a' + @width.to_s, @width) }
 
-    pp @rows if @debug  # TODO
+    # pp @rows if @debug  # TODO
   end
 
   # Skip possible solution
@@ -105,14 +105,14 @@ class PuzzleLoader
     @author     = unpack_zstring
     @copyright  = unpack_zstring
 
-    puts "Texts: #{@title}, #{@author}, #{@copyright}" if @debug   # TODO
+    # puts "Texts: #{@title}, #{@author}, #{@copyright}" if @debug   # TODO
   end
 
   def load_clues
     @clues = []
     @num_clues.times { @clues << unpack_zstring }
 
-    pp @clues if @debug   # TODO
+    # pp @clues if @debug   # TODO
   end
 
   def read(filename)

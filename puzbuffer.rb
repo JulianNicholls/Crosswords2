@@ -30,8 +30,8 @@ class PuzzleBuffer
     unpack_multiple(spec, size)[0]
   end
 
-  # :reek:ControlParameter - size - it would make no sense to define read_4_bytes,
-  # read_12_bytes, ad infinitum.
+  # :reek:ControlParameter - size - it would make no sense to define
+  # read_4_bytes, read_12_bytes, etc ad infinitum.
   def unpack_multiple(spec, size)
     start = @pos
     @pos += (size || SIZES[spec[0]])

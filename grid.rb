@@ -4,6 +4,7 @@ require 'cell'
 # Represent a whole crossword grid
 class Grid
   include Constants
+  include GosuEnhanced
 
   attr_reader :width, :height, :size
 
@@ -22,19 +23,22 @@ class Grid
   private
 
   def set_dimensions(width, height)
+    # Width and Height by cells
     @width  = width
     @height = height
-    @size   = Size.new(width * CELL_SIZE.width, height * CELL_SIZE.height)
+    # Size in pixels
+    @size   = Size(width * CELL_SIZE.width, height * CELL_SIZE.height)
   end
 
+  # :reek:NestedIterators - Two deep is fine AFAIC
   def build_grid(raw_rows)
     raw_rows.each do |row|
-      row.each_char { |c| add_cell c }
+      row.each_char { |ltr| add_cell ltr }
     end
   end
 
-  def add_cell(c)
-    @grid << Cell.new(c)
+  def add_cell(ltr)
+    @grid << Cell.new(ltr)
   end
 
   def add_clue(clue)
@@ -45,6 +49,7 @@ class Grid
     @grid[pos.row * @width + pos.col]
   end
 
+  # :reek:NestedIterators - Two deep is fine AFAIC
   def each_with_position
     height.times do |row|
       width.times do |col|
@@ -60,7 +65,7 @@ class Grid
 
     loop do
       gpoint = @traverser.next_cell(gpoint, direction)
-      break if gpoint.nil?
+      break unless gpoint
       word << gpoint
     end
 
@@ -79,7 +84,7 @@ class Grid
   end
 
   def completed
-    each_with_position do |cell, _|
+    @grid.each do |cell|
       next if cell.blank?
 
       return false  if cell.empty?
@@ -110,8 +115,10 @@ class Grid
   # AND
   #   (b) Not at the right margin and not left of a blank
   def needs_across_number?(gpoint)
-    (gpoint.col == 0 || cell_at(gpoint.offset(0, -1)).blank?) &&
-      gpoint.col < @width - 1 && !cell_at(gpoint.offset(0, 1)).blank?
+    col = gpoint.col
+
+    (col == 0 || cell_at(gpoint.offset(0, -1)).blank?) &&
+      col < @width - 1 && !cell_at(gpoint.offset(0, 1)).blank?
   end
 
   # Needs a down number if the point
@@ -119,7 +126,9 @@ class Grid
   # AND
   #   (b) Not at the very bottom and not above a blank
   def needs_down_number?(gpoint)
-    (gpoint.row == 0 || cell_at(gpoint.offset(-1, 0)).blank?) &&
-      gpoint.row < @height - 1 && !cell_at(gpoint.offset(1, 0)).blank?
+    row = gpoint.row
+
+    (row == 0 || cell_at(gpoint.offset(-1, 0)).blank?) &&
+      row < @height - 1 && !cell_at(gpoint.offset(1, 0)).blank?
   end
 end

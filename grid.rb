@@ -1,5 +1,5 @@
-require 'gridpoint'
-require 'cell'
+require './gridpoint'
+require './cell'
 
 # Represent a whole crossword grid
 class Grid

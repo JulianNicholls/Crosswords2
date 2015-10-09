@@ -2,7 +2,7 @@ require './constants'
 
 # Represent a cell position in the grid in row, column order
 GridPoint = Struct.new(:row, :col) do
-  include Constants
+  extend Constants
 
   @grid = nil
 
@@ -16,8 +16,8 @@ GridPoint = Struct.new(:row, :col) do
     # :reek:UncommunicativeParameterName - x and y are the natural names to use
     def from_xy(x, y)
       new(
-        ((y - GRID_ORIGIN.y) / CELL_SIZE.height).floor,
-        ((x - GRID_ORIGIN.x) / CELL_SIZE.width).floor
+        ((y - Constants::GRID_ORIGIN.y) / Constants::CELL_SIZE.height).floor,
+        ((x - Constants::GRID_ORIGIN.x) / Constants::CELL_SIZE.width).floor
       )
     end
   end
@@ -36,7 +36,8 @@ GridPoint = Struct.new(:row, :col) do
   end
 
   def to_point
-    GRID_ORIGIN.offset(col * CELL_SIZE.width, row * CELL_SIZE.height)
+    Constants::GRID_ORIGIN.offset(
+      col * Constants::CELL_SIZE.width, row * Constants::CELL_SIZE.height)
   end
 
   private

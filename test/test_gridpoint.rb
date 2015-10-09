@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 
+require 'gosu_enhanced'
 require './grid'
 require './gridpoint'
 
@@ -8,7 +9,8 @@ require './gridpoint'
 class GridPointTest < Minitest::Test
   def setup
     @loader = PuzzleLoader.new('Puzzles/2014-4-22-LosAngelesTimes.puz')
-    @grid  = Grid.new(@loader.rows, @loader.clues)
+    @grid   = Grid.new(@loader.rows, @loader.clues)
+
     GridPoint.grid = @grid
   end
 
@@ -42,5 +44,24 @@ class GridPointTest < Minitest::Test
   def test_offset
     assert_equal GridPoint.new(6, 8), GridPoint.new(2, 3).offset(4, 5)
     assert_equal GridPoint.new(8, 11), GridPoint.new(3, 4).offset(GridPoint.new(5, 7))
+  end
+
+  def test_to_point
+    assert_equal GosuEnhanced::Point( 610,  10), GridPoint.new(0, 0).to_point
+    assert_equal GosuEnhanced::Point(1002,  10), GridPoint.new(0, 14).to_point
+    assert_equal GosuEnhanced::Point( 610, 402), GridPoint.new(14, 0).to_point
+    assert_equal GosuEnhanced::Point(1002, 402), GridPoint.new(14, 14).to_point
+
+    assert_equal GosuEnhanced::Point( 806, 150), GridPoint.new(5, 7).to_point
+  end
+
+  def test_from_point
+    assert_equal GridPoint.new(6, 3), GridPoint.from_point(GosuEnhanced::Point(700, 200))
+    assert_equal GridPoint.new(12, 10), GridPoint.from_point(GosuEnhanced::Point(900, 360))
+  end
+
+  def test_from_xy
+    assert_equal GridPoint.new(6, 3), GridPoint.from_xy(700, 200)
+    assert_equal GridPoint.new(12, 10), GridPoint.from_xy(900, 360)
   end
 end

@@ -7,7 +7,7 @@ require './grid'
 class GridTest < Minitest::Test
   def setup
     @loader = PuzzleLoader.new('Puzzles/2014-4-22-LosAngelesTimes.puz')
-    @grid  = Grid.new(@loader.rows, @loader.clues)
+    @grid   = Grid.new(@loader.rows, @loader.clues)
   end
 
   def test_width

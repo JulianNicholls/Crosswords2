@@ -1,4 +1,5 @@
 require './gridpoint'
+require './cluelist'
 require './cell'
 
 # Represent a whole crossword grid
@@ -13,11 +14,24 @@ class Grid
 
   def initialize(raw_rows, clues)
     @grid     = []
-    @cluelist = []  # For now
+    @cluelist = ClueList.new
 
     set_dimensions(raw_rows[0].size, raw_rows.size)
     build_grid(raw_rows)
-#    add_numbers_and_clues(clues.to_enum)
+    add_numbers_and_clues(clues.to_enum)
+  end
+
+  def word_cells(number, direction)
+    gpoint = @cluelist.cell_pos(number, direction)
+    word   = [gpoint]
+
+    loop do
+      gpoint = @traverser.next_cell(gpoint, direction)
+      break unless gpoint
+      word << gpoint
+    end
+
+    word
   end
 
   private
@@ -26,6 +40,7 @@ class Grid
     # Width and Height by cells
     @width  = width
     @height = height
+
     # Size in pixels
     @size   = Size(width * CELL_SIZE.width, height * CELL_SIZE.height)
   end
@@ -39,10 +54,6 @@ class Grid
 
   def add_cell(ltr)
     @grid << Cell.new(ltr)
-  end
-
-  def add_clue(clue)
-    @cluelist.add(clue, self)
   end
 
   def cell_at(pos)
@@ -59,25 +70,13 @@ class Grid
     end
   end
 
-  def word_cells(number, direction)
-    gpoint = @cluelist.cell_pos(number, direction)
-    word   = [gpoint]
-
-    loop do
-      gpoint = @traverser.next_cell(gpoint, direction)
-      break unless gpoint
-      word << gpoint
-    end
-
-    word
-  end
-
   def word_num_from_pos(pos, direction)
     return 0 if cell_at(pos).blank?
 
     @cluelist.clues_of(direction).each do |clue|
-      cells = word_cells(clue.number, direction)
-      return clue.number if cells.include? pos
+      index = clue.number
+      cells = word_cells(index, direction)
+      return index if cells.include? pos
     end
 
     fail "No word from #{pos}"
@@ -106,7 +105,7 @@ class Grid
       add_clue(Clue.new(:across, number, clues.next, gpoint)) if nan
       add_clue(Clue.new(:down,   number, clues.next, gpoint)) if ndn
 
-      cell.number = (number += 1) - 1 if nan || ndn
+      cell.add_index((number += 1) - 1) if nan || ndn
     end
   end
 
@@ -130,5 +129,9 @@ class Grid
 
     (row == 0 || cell_at(gpoint.offset(-1, 0)).blank?) &&
       row < @height - 1 && !cell_at(gpoint.offset(1, 0)).blank?
+  end
+
+  def add_clue(clue)
+    @cluelist.add(clue, self)
   end
 end

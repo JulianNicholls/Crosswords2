@@ -22,7 +22,8 @@ class LoaderTest < Minitest::Test
   end
 
   def test_author
-    assert_equal 'Gail Grabowski and Bruce Venzke / Ed. Rich Norris', @loader.author
+    assert_equal 'Gail Grabowski and Bruce Venzke / Ed. Rich Norris',
+                 @loader.author
   end
 
   # This ignores the copyright character at the beginning
